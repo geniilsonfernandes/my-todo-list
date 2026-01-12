@@ -15,9 +15,10 @@ export const TodoListPage = () => {
 
     return (
 
-        <Container maxWidth="md">
-            <Welcome />
-
+        <Container maxWidth="md" >
+            <Typography variant="h4" my={4} textAlign="center" fontSize={{ xs: 16, sm: 18, md: 24 }} fontWeight={600} gutterBottom>
+                Tarefas Cadastradas
+            </Typography>
             <SearchBar />
             <List sx={{ width: '100%' }} >
                 {tasks.map((item) => (
@@ -28,22 +29,5 @@ export const TodoListPage = () => {
     );
 };
 
-
-
-const Welcome = () => {
-    return (
-        <Box my={4}>
-            <Typography variant="h4" fontSize={{ xs: 24, sm: 32, md: 48 }} fontWeight={600} gutterBottom>
-                Olá, seja bem-vindo!
-            </Typography>
-            <Typography variant="h6" fontSize={{ xs: 14, sm: 16, md: 16 }} fontWeight={400} gutterBottom>
-                Aqui está sua lista de tarefas, adicione uma nova tarefa para começar!
-            </Typography>
-            <Button variant="text" color="secondary" endIcon={<AddIcon />} sx={{ mt: 2 }}>
-                Adicionar Tarefa
-            </Button>
-        </Box>
-    );
-};
 
 
