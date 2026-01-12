@@ -1,15 +1,10 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { theme } from '../style/theme';
 import { AppRoutes } from '../routes/AppRoutes';
-import { Toaster } from 'sonner'
+import { Providers } from '../providers/Providers';
 
 
 export const App = () => (
-  <ThemeProvider theme={theme}>
-    <Toaster position="top-center" richColors />
-    <CssBaseline />
+  <Providers>
     <AppRoutes />
-  </ThemeProvider>
+  </Providers>
 );
