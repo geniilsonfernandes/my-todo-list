@@ -3,7 +3,7 @@ import { Box, Typography, TextField, Button, Link as MuiLink, InputAdornment, Ic
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,7 +13,8 @@ const schema = z.object({
   password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
 });
 
-export const WelcomePage = () => {
+export const AuthPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -30,10 +31,15 @@ export const WelcomePage = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
+    defaultValues: {
+      email: 'meuemail@gmail.com',
+      password: '123456',
+    },
   });
 
   const handleLogin = (data) => {
     console.log('Login attempt', data);
+    navigate('/dashboard');
   };
 
   const handleRegister = (data) => {
