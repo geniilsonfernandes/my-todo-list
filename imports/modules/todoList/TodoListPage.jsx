@@ -4,7 +4,15 @@ import { Box, Button, Container, List, Typography } from '@mui/material';
 import { TodoItem } from './components/TodoItem';
 import { SearchBar } from './components/SearchBar';
 
+const tasks = [
+    { _id: 1, todo: 'Buy Milk', title: 'Groceries', owner: 'John Doe' },
+    { _id: 2, todo: 'Walk the Dog', title: 'Chores', owner: 'Jane Doe' },
+    { _id: 3, todo: 'Finish Report', title: 'Work', owner: 'John Doe' },
+];
+
+
 export const TodoListPage = () => {
+
     return (
 
         <Container maxWidth="md">
@@ -12,11 +20,7 @@ export const TodoListPage = () => {
 
             <SearchBar />
             <List sx={{ width: '100%' }} >
-                {[
-                    { _id: 1, todo: 'Buy Milk', title: 'Groceries', owner: 'John Doe' },
-                    { _id: 2, todo: 'Walk the Dog', title: 'Chores', owner: 'Jane Doe' },
-                    { _id: 3, todo: 'Finish Report', title: 'Work', owner: 'John Doe' },
-                ].map((item) => (
+                {tasks.map((item) => (
                     <TodoItem item={item} key={item._id} />
                 ))}
             </List>
