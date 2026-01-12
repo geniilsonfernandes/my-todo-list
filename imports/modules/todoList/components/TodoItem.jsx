@@ -2,9 +2,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListItem, ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
-
+import { useNavigate } from 'react-router-dom';
 
 export const TodoItem = ({ item }) => {
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openDialog, setOpenDialog] = React.useState(false);
 
@@ -24,6 +25,11 @@ export const TodoItem = ({ item }) => {
     const handleConfirmDelete = () => {
         setOpenDialog(false);
         console.log('Deleted item:', item._id);
+    };
+
+    const handleEditClick = () => {
+        navigate(`/edit/${item._id}`);
+        handleClose();
     };
 
     const handleCancelDelete = () => {
@@ -60,7 +66,7 @@ export const TodoItem = ({ item }) => {
                 onClose={handleClose}
 
             >
-                <MenuItem onClick={handleClose}>editar</MenuItem>
+                <MenuItem onClick={handleEditClick}>editar</MenuItem>
                 <MenuItem onClick={handleDeleteClick}>Remover</MenuItem>
             </Menu>
 

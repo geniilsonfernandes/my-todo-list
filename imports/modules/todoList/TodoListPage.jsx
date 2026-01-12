@@ -1,6 +1,5 @@
 import React from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import { Box, Button, Container, List, Typography } from '@mui/material';
+import { Container, List, Typography } from '@mui/material';
 import { TodoItem } from './components/TodoItem';
 import { SearchBar } from './components/SearchBar';
 
