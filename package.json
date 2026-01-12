@@ -11,12 +11,16 @@
     "@babel/runtime": "^7.23.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
     "@swc/helpers": "^0.5.17",
     "meteor-node-stubs": "^1.2.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.26.2"
+    "react-hook-form": "^7.71.0",
+    "react-router-dom": "^6.26.2",
+    "zod": "^4.3.5"
   },
   "meteor": {
     "mainModule": {
