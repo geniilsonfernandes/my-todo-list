@@ -1,6 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { LinksCollection } from '/imports/api/links';
 
+// methods created in /imports/api/users/methods.js
+import '/imports/api/users/methods';
+
 async function insertLink({ title, url }) {
   await LinksCollection.insertAsync({ title, url, createdAt: new Date() });
 }

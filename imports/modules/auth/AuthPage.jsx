@@ -1,50 +1,29 @@
 import React from 'react';
-import { Box, Typography, TextField, Button, Link as MuiLink, InputAdornment, IconButton, FormControl, InputLabel, FormHelperText } from '@mui/material';
+import { Box, Typography, TextField, Button, InputAdornment, IconButton, FormControl, InputLabel, FormHelperText } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
-const schema = z.object({
-  email: z.email({ message: 'Email inválido' }),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
-});
+import { authSchema } from './validation/authValidation';
+import { useAuth } from './hooks/useAuth';
 
 export const AuthPage = () => {
-  const navigate = useNavigate();
+  const { login, register, loading } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-    setShowPassword(true);
-  };
-
-  const handleMouseUpPassword = (event) => {
-    event.preventDefault();
-    setShowPassword(false);
-  };
-
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(schema),
+  const { register: formRegister, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(authSchema),
     defaultValues: {
-      email: 'meuemail@gmail.com',
-      password: '123456',
+      email: 'genilson@gmail.com',
+      password: '123456e',
     },
   });
 
-  const handleLogin = (data) => {
-    console.log('Login attempt', data);
-    navigate('/dashboard');
-  };
-
-  const handleRegister = (data) => {
-    console.log('Register attempt', data);
-  };
+  const handleLogin = (data) => login(data.email, data.password);
+  const handleRegister = (data) => register(data.email, data.password);
 
   return (
     <Box
@@ -66,22 +45,21 @@ export const AuthPage = () => {
           label="Email"
           variant="outlined"
           fullWidth
-          {...register('email')}
+          {...formRegister('email')}
           error={!!errors.email}
           helperText={errors.email?.message}
         />
-        <FormControl size='small' error={!!errors.password} fullWidth sx={{ mt: 2, }} variant="outlined">
+
+        <FormControl size='small' error={!!errors.password} fullWidth sx={{ mt: 2 }} variant="outlined">
           <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
           <OutlinedInput
-            {...register('password')}
+            {...formRegister('password')}
             id="outlined-adornment-password"
             type={showPassword ? 'text' : 'password'}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
-                  aria-label={
-                    showPassword ? 'hide the password' : 'display the password'
-                  }
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                   onClick={handleClickShowPassword}
                   edge="end"
                 >
@@ -92,7 +70,6 @@ export const AuthPage = () => {
             label="Password"
           />
           <FormHelperText>{errors.password?.message}</FormHelperText>
-
         </FormControl>
 
         <Button
@@ -101,6 +78,8 @@ export const AuthPage = () => {
           fullWidth
           sx={{ mt: 2 }}
           onClick={handleSubmit(handleLogin)}
+          disabled={loading}
+          loading={loading}
         >
           Entrar
         </Button>
@@ -110,15 +89,10 @@ export const AuthPage = () => {
           fullWidth
           sx={{ mt: 2 }}
           onClick={handleSubmit(handleRegister)}
+          disabled={loading}
         >
           Cadastrar
         </Button>
-      </Box>
-
-      <Box sx={{ mt: 3 }}>
-        <MuiLink component={Link} to="/info">
-          Recuperar senha
-        </MuiLink>
       </Box>
     </Box>
   );
