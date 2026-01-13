@@ -23,29 +23,22 @@ export const TodoListPage = () => {
     const skip = page * limit;
 
     const { tasks, loading } = useTracker(() => {
-        const hideCompleted = !showCompleted;
-        const handler = Meteor.subscribe('tasks', { limit, skip, query, hideCompleted });
+        const handler = Meteor.subscribe('tasks', { limit, skip, query, showCompleted });
         const isLoading = !handler.ready();
 
-        const selector = { owner: Meteor.userId() };
-        if (hideCompleted) {
-            selector.status = { $ne: 'completed' };
-        }
-        if (query && query.trim() !== '') {
-            selector.todo = { $regex: query.trim(), $options: 'i' };
-        }
-
-        const data = isLoading ? [] : TasksCollection.find(selector).fetch();
+        const data = isLoading
+            ? []
+            : TasksCollection.find({}, { sort: { createdAt: -1 } }).fetch();
 
         return { tasks: data, loading: isLoading };
     }, [page, query, showCompleted]);
 
-    const { totalCount } = useTasksCount({ hideCompleted: !showCompleted }, [tasks]);
+    const { totalCount } = useTasksCount({ showCompleted }, [tasks]);
 
     return (
         <Container maxWidth="md"   >
             <Typography variant="h4" my={4} textAlign="center" fontSize={{ xs: 16, sm: 18, md: 24 }} fontWeight={600} gutterBottom>
-                Tarefas Cadastradas
+                Tarefas Cadastradas {totalCount}
             </Typography>
             <SearchBar
                 onSearch={(value) => searchQueryVar.set(value)}

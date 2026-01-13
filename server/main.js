@@ -5,7 +5,6 @@ import { LinksCollection } from '/imports/api/links';
 import '/imports/api/users/methods';
 import '/imports/api/tasks/tasksMethods';
 import '/imports/api/tasks/tasksPublications.js';
-import '/imports/api/tasks/tasksCount.js';
 
 async function insertLink({ title, url }) {
   await LinksCollection.insertAsync({ title, url, createdAt: new Date() });

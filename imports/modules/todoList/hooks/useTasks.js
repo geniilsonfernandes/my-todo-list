@@ -69,7 +69,7 @@ export const useTasksCount = (filters = {}, deps = []) => {
     return () => {
       isMounted = false;
     };
-  }, deps); // deps podem ser [tasks] ou vazio, dependendo da sua necessidade
+  }, deps); 
 
   return { totalCount, loading };
 };
