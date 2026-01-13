@@ -21,13 +21,11 @@ export const SearchBar = ({ onSearch, delay = 500 }) => {
                 placeholder="Procurar..."
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
-                }}
+                startAdornment={
+                    <InputAdornment position="start">
+                        <SearchIcon />
+                    </InputAdornment>
+                }
             />
         </Box>
     );

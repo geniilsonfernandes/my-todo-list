@@ -6,19 +6,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { grey } from '@mui/material/colors';
-
-
-
-
-const tasks = [
-    { _id: 1, todo: 'Buy Milk', title: 'Groceries', owner: 'John Doe' },
-    { _id: 2, todo: 'Walk the Dog', title: 'Chores', owner: 'Jane Doe' },
-    { _id: 3, todo: 'Finish Report', title: 'Work', owner: 'John Doe' },
-];
-
-
-
-
 import { useAuthContext } from '../../ui/context/AuthContext';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { IconButton, Stack, Tooltip } from '@mui/material';
@@ -26,20 +13,43 @@ import { IconButton, Stack, Tooltip } from '@mui/material';
 export const DashboardPage = () => {
     const { user, logout } = useAuthContext();
     const navigate = useNavigate();
+    const [analytics, setAnalytics] = React.useState(null);
 
-    const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(t => t.completed).length;
-    const inProgressTasks = totalTasks - completedTasks;
+    React.useEffect(() => {
+        Meteor.call('tasks.analytics', (err, result) => {
+            if (err) {
+                console.error(err);
+            } else {
+                setAnalytics(result);
+            }
+        });
+    }, []);
 
-    const cards = [
-        {
-            title: 'Total de Tarefas cadastradas',
-            count: totalTasks, icon: <AssignmentIcon fontSize="large" color="primary" />, color: grey[100]
-        },
-        { title: 'Total de tarefas concluídas', count: completedTasks, icon: <CheckCircleIcon fontSize="large" color="success" />, color: grey[100] },
-        { title: 'Total de tarefas a serem concluídas', count: inProgressTasks, icon: <PendingIcon fontSize="large" color="warning" />, color: grey[100] },
-
-    ];
+    // Memoiza os cards para não recriar em toda render
+    const cards = React.useMemo(() => {
+        if (!analytics) return [];
+        const { totalTasks, completedTasks, inProgressTasks } = analytics;
+        return [
+            {
+                title: 'Total de Tarefas cadastradas',
+                count: totalTasks,
+                icon: <AssignmentIcon fontSize="large" color="primary" />,
+                color: grey[100],
+            },
+            {
+                title: 'Total de tarefas concluídas',
+                count: completedTasks,
+                icon: <CheckCircleIcon fontSize="large" color="success" />,
+                color: grey[100],
+            },
+            {
+                title: 'Total de tarefas a serem concluídas',
+                count: inProgressTasks,
+                icon: <PendingIcon fontSize="large" color="warning" />,
+                color: grey[100],
+            },
+        ];
+    }, [analytics]);
 
     return (
         <Container maxWidth="md" sx={{ mt: 4 }}>

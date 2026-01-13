@@ -17,7 +17,6 @@ Meteor.publish('tasks', function tasksPublication({ limit = 4, skip = 0, query =
   return TasksCollection.find(
     selector,
     {
-      sort: { createdAt: -1 },
       limit,
       skip,
     }

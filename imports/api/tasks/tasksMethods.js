@@ -23,7 +23,7 @@ Meteor.methods({
 
     const user = Meteor.user();
     console.log(user);
-    
+
 
     return TasksCollection.insertAsync({
       todo,
@@ -35,7 +35,7 @@ Meteor.methods({
     })
   },
 
-  
+
 
   'tasks.update'(taskId, todo, description, date) {
     check(taskId, String);
@@ -93,5 +93,24 @@ Meteor.methods({
       throw new Meteor.Error('not-authorized', 'Você não pode visualizar esta tarefa');
     return task;
   },
+
+
+  // analytics for welcome page
+  async 'tasks.analytics'() {
+    if (!this.userId) return 0;
+
+    const selector = { owner: this.userId };
+    const totalTasks = await TasksCollection.find(selector).countAsync();
+    const completedTasks = await TasksCollection.find({ ...selector, status: 'completed' }).countAsync();
+    const inProgressTasks = await TasksCollection.find({ ...selector, status: 'in-progress' }).countAsync();
+    const pendingTasks = await TasksCollection.find({ ...selector, status: 'pending' }).countAsync();
+
+    return {
+      totalTasks,
+      completedTasks,
+      inProgressTasks,
+      pendingTasks,
+    };
+  }
 });
 

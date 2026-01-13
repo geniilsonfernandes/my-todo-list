@@ -5,6 +5,7 @@ import React from 'react';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useNavigate } from 'react-router-dom';
 import { useDeleteTask } from '../hooks/useTasks';
+import { TaskStatus, TaskStatusEnum } from '../../../api/tasks/tasksMethods';
 
 export const TodoItem = ({ item }) => {
     const { removeTask, loading } = useDeleteTask();
@@ -50,7 +51,7 @@ export const TodoItem = ({ item }) => {
             sx={{ background: grey[100], borderRadius: 2, mb: 1 }}
         >
             <ListItemIcon>
-                <AssignmentIcon color={item.status === 'completed' ? 'success' : 'primary'} />
+                <AssignmentIcon color={item.status === TaskStatusEnum.COMPLETED ? 'success' : item.status === TaskStatusEnum.IN_PROGRESS ? 'info' : 'warning'} />
             </ListItemIcon>
             <ListItemText
 

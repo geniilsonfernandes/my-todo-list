@@ -9,15 +9,15 @@ import { TasksCollection } from '../../api/tasks/tasksCollection';
 import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { EmptyState } from '../../ui/components/EmptyState';
-import { showCompletedVar, searchQueryVar } from './reactiveVars';
+import { showCompletedVar, searchQueryVar, currentPageVar } from './reactiveVars';
 
 
 
 export const TodoListPage = () => {
     const navigate = useNavigate();
-    const [page, setPage] = React.useState(0);
     const showCompleted = useTracker(() => showCompletedVar.get());
     const query = useTracker(() => searchQueryVar.get());
+    const page = useTracker(() => currentPageVar.get());
 
     const limit = 4;
     const skip = page * limit;
@@ -35,7 +35,7 @@ export const TodoListPage = () => {
             selector.todo = { $regex: query.trim(), $options: 'i' };
         }
 
-        const data = isLoading ? [] : TasksCollection.find(selector, { sort: { createdAt: -1 } }).fetch();
+        const data = isLoading ? [] : TasksCollection.find(selector).fetch();
 
         return { tasks: data, loading: isLoading };
     }, [page, query, showCompleted]);
@@ -45,7 +45,7 @@ export const TodoListPage = () => {
     return (
         <Container maxWidth="md"   >
             <Typography variant="h4" my={4} textAlign="center" fontSize={{ xs: 16, sm: 18, md: 24 }} fontWeight={600} gutterBottom>
-                Tarefas Cadastradas {totalCount}
+                Tarefas Cadastradas
             </Typography>
             <SearchBar
                 onSearch={(value) => searchQueryVar.set(value)}
@@ -60,9 +60,20 @@ export const TodoListPage = () => {
                     }
                     label="Mostrar concluídas"
                 />
-                <Pagination count={Math.ceil(totalCount / 4)} page={page + 1} onChange={(_, value) => setPage(value - 1)} />
+                <Pagination count={Math.ceil(totalCount / 4)} page={page + 1} onChange={(_, value) => currentPageVar.set(value - 1)} />
             </Stack>
-            {tasks.length === 0 && !loading ? (
+            {loading ? (
+                <List sx={{ width: '100%' }}>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                        <Skeleton
+                            key={index}
+                            variant="rectangular"
+                            height={60}
+                            sx={{ mb: 1, borderRadius: 1 }}
+                        />
+                    ))}
+                </List>
+            ) : tasks.length === 0 ? (
                 <EmptyState
                     message="Nenhuma tarefa encontrada"
                     onAction={() => navigate('/new')}
@@ -70,7 +81,9 @@ export const TodoListPage = () => {
                 />
             ) : (
                 <List sx={{ width: '100%' }}>
-                    {tasks.map((item) => <TodoItem item={item} key={item._id} />)}
+                            {tasks.slice(0, 4).map((item) => (
+                                <TodoItem item={item} key={item._id} />
+                            ))}
                 </List>
             )}
             <Fab
