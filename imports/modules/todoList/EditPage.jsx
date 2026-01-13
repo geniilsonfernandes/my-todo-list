@@ -22,12 +22,6 @@ const STATUS = [
     { value: STATUS_CONCLUIDA, label: STATUS_CONCLUIDA, color: 'success' },
 ];
 
-// Mock data to simulate fetching a task
-const MOCK_TASKS = [
-    { _id: 1, todo: 'Buy Milk', description: 'Go to the store and buy milk', status: STATUS_EM_ANDAMENTO, date: '2026-01-12', owner: 'John Doe' },
-    { _id: 2, todo: 'Walk the Dog', description: 'Take the dog for a walk in the park', status: STATUS_CONCLUIDA, date: '2026-01-12', owner: 'Jane Doe' },
-    { _id: 3, todo: 'Finish Report', description: 'Complete the monthly report', status: STATUS_CADASTRADA, date: '2026-01-15', owner: 'John Doe' },
-];
 
 export const EditPage = () => {
 
@@ -36,14 +30,22 @@ export const EditPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [task, setTask] = useState(null);
     const [formData, setFormData] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        // Simulate fetch
-        const foundTask = MOCK_TASKS.find(t => t._id === parseInt(id));
-        if (foundTask) {
-            setTask(foundTask);
-            setFormData(foundTask);
-        }
+    React.useEffect(() => {
+        if (!id) return;
+
+        setLoading(true);
+        Meteor.call('tasks.getOne', id, (err, result) => {
+            if (err) {
+                setError(err.reason);
+                setTask(null);
+            } else {
+                setTask(result);
+            }
+            setLoading(false);
+        });
     }, [id]);
 
     const handleEditToggle = () => {
@@ -55,14 +57,14 @@ export const EditPage = () => {
 
     const handleSave = () => {
         setTask(formData);
-        navigate(-1);
+        setIsEditing(false);
         toast.success('Tarefa salva com sucesso!');
+        // navigate('/tasks'); // Staying on page to see changes or navigating back? User previous edit removed navigate.
     };
 
     const handleCancel = () => {
         setFormData(task);
         setIsEditing(false);
-
     };
 
     const handleChange = (e) => {
@@ -73,15 +75,16 @@ export const EditPage = () => {
         const updatedTask = { ...task, status: newStatus };
         switch (newStatus) {
             case STATUS_CADASTRADA:
-                toast.info('Tarefa movida para: ' + newStatus);
+                toast.warning('Tarefa movida para: ' + newStatus);
                 break;
             case STATUS_EM_ANDAMENTO:
                 toast.success('Tarefa movida para: ' + newStatus);
                 break;
             case STATUS_CONCLUIDA:
-                toast.warning('Tarefa movida para: ' + newStatus);
+                toast.info('Tarefa movida para: ' + newStatus);
                 break;
         }
+
         setTask(updatedTask);
         setFormData(updatedTask);
     };
@@ -171,7 +174,7 @@ export const EditPage = () => {
                 />
 
                 {isEditing ? (
-                    <Box mt={1} display="flex" justifyContent="space-between" gap={2}>
+                    <Box mt={3} display="flex" justifyContent="space-between" gap={2}>
                         <Button variant="outlined" endIcon={<CancelIcon />} color="secondary" onClick={handleCancel}>
                             Cancelar
                         </Button>
@@ -180,8 +183,10 @@ export const EditPage = () => {
                         </Button>
                     </Box>
                 ) : (
-                    <Paper sx={{ p: 2, mt: 4 }} variant="outlined">
+
+                        <Paper sx={{ p: 2 }} >
                         <Box >
+
                             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} mb={3} justifyContent="center">
                                 <Button
                                     variant="contained"

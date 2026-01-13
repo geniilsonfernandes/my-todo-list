@@ -5,6 +5,7 @@ import { TodoListPage } from '../modules/todoList/TodoListPage';
 import { AuthPage } from '../modules/auth/AuthPage';
 import { DashboardPage } from '../modules/dashboard/DashboardPage';
 import { EditPage } from '../modules/todoList/EditPage';
+import { NewPage } from '../modules/todoList/NewPage';
 import { RouteWrapper } from './RouteWrapper';
 
 export const AppRoutes = () => (
@@ -39,6 +40,15 @@ export const AppRoutes = () => (
                 element={
                     <RouteWrapper type="private">
                         <EditPage />
+                    </RouteWrapper>
+                }
+
+            />
+            <Route
+                path="/new"
+                element={
+                    <RouteWrapper type="private">
+                        <NewPage />
                     </RouteWrapper>
                 }
             />

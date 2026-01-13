@@ -7,7 +7,9 @@ import { LoaderFullScreen } from '../ui/components/LoaderFullScreen';
  * type: 'private' | 'public'
  */
 export const RouteWrapper = ({ children, type = 'private' }) => {
-    const { user } = useAuthContext();
+    const { user, isLoading } = useAuthContext();
+
+    if (isLoading) return <LoaderFullScreen />;
 
     if (type === 'private' && !user) return <Navigate to="/" replace />;
     if (type === 'public' && user) return <Navigate to="/dashboard" replace />;

@@ -1,0 +1,24 @@
+import { Meteor } from 'meteor/meteor';
+import { TasksCollection } from './tasksCollection';
+
+Meteor.publish('tasks', function tasksPublication({ limit = 4, skip = 0, query = "" }) {
+  if (!this.userId) return this.ready();
+
+  let selector = { owner: this.userId };
+
+  if (query && query.trim() !== '') {
+    selector.todo = { $regex: query.trim(), $options: 'i' };
+  }
+
+
+  return TasksCollection.find(
+    selector,
+    {
+      sort: { createdAt: -1 },
+      limit,
+      skip,
+    }
+  );
+});
+
+
