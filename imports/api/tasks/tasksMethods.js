@@ -74,9 +74,15 @@ Meteor.methods({
 
     return TasksCollection.removeAsync(taskId);
   },
-  async 'tasks.count'() {
+  async 'tasks.count'({ hideCompleted = false } = {}) {
     if (!this.userId) return 0;
-    return TasksCollection.find({ owner: this.userId }).countAsync();
+
+    const selector = { owner: this.userId };
+    if (hideCompleted) {
+      selector.status = { $ne: 'completed' };
+    }
+
+    return TasksCollection.find(selector).countAsync();
   },
 
   /// get one task

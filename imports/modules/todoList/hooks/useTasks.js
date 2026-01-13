@@ -45,7 +45,7 @@ export const useDeleteTask = () => {
 
 // THIS IS FOR COUNT TOTAL TASKS
 
-export const useTasksCount = (deps = []) => {
+export const useTasksCount = (filters = {}, deps = []) => {
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +55,7 @@ export const useTasksCount = (deps = []) => {
     const fetchCount = async () => {
       setLoading(true);
       try {
-        const count = await Meteor.callAsync('tasks.count');
+        const count = await Meteor.callAsync('tasks.count', filters);
         if (isMounted) setTotalCount(count);
       } catch (err) {
         console.error('Error fetching tasks count:', err);

@@ -52,7 +52,9 @@ export const TodoItem = ({ item }) => {
             <ListItemIcon>
                 <AssignmentIcon color={item.status === 'completed' ? 'success' : 'primary'} />
             </ListItemIcon>
-            <ListItemText primary={item.todo} secondary={item.owner || item.status} />
+            <ListItemText
+
+                primary={`${item.todo} - ${item.status}`} secondary={item.owner || item.status} />
             <IconButton
                 id={`basic-button-${item._id}`}
                 aria-controls={open ? 'basic-menu' : undefined}

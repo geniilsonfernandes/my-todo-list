@@ -25,7 +25,6 @@ const STATUS = [
 
 export const EditPage = () => {
 
-    const { id } = useParams();
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
     const [task, setTask] = useState(null);
@@ -33,6 +32,8 @@ export const EditPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+
+    const { id } = useParams();
     React.useEffect(() => {
         if (!id) return;
 

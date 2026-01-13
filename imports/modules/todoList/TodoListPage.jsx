@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, Stack, Typography, Button, Container, Pagination, Skeleton } from '@mui/material';
+import { List, Stack, Typography, Button, Container, Pagination, Skeleton, FormControlLabel, Checkbox } from '@mui/material';
 import { TodoItem } from './components/TodoItem';
 import { SearchBar } from './components/SearchBar';
 import { useNavigate } from 'react-router-dom';
@@ -9,19 +9,28 @@ import { TasksCollection } from '../../api/tasks/tasksCollection';
 import { Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { EmptyState } from '../../ui/components/EmptyState';
+import { showCompletedVar, searchQueryVar } from './reactiveVars';
+
+
 
 export const TodoListPage = () => {
     const navigate = useNavigate();
     const [page, setPage] = React.useState(0);
-    const [query, setQuery] = React.useState('');
+    const showCompleted = useTracker(() => showCompletedVar.get());
+    const query = useTracker(() => searchQueryVar.get());
+
     const limit = 4;
     const skip = page * limit;
 
     const { tasks, loading } = useTracker(() => {
-        const handler = Meteor.subscribe('tasks', { limit, skip, query });
+        const hideCompleted = !showCompleted;
+        const handler = Meteor.subscribe('tasks', { limit, skip, query, hideCompleted });
         const isLoading = !handler.ready();
 
         const selector = { owner: Meteor.userId() };
+        if (hideCompleted) {
+            selector.status = { $ne: 'completed' };
+        }
         if (query && query.trim() !== '') {
             selector.todo = { $regex: query.trim(), $options: 'i' };
         }
@@ -29,24 +38,28 @@ export const TodoListPage = () => {
         const data = isLoading ? [] : TasksCollection.find(selector, { sort: { createdAt: -1 } }).fetch();
 
         return { tasks: data, loading: isLoading };
-    }, [page, query]);
+    }, [page, query, showCompleted]);
 
-    const { totalCount } = useTasksCount([tasks]);
-
-
-    console.log(tasks);
-
-
+    const { totalCount } = useTasksCount({ hideCompleted: !showCompleted }, [tasks]);
 
     return (
         <Container maxWidth="md"   >
             <Typography variant="h4" my={4} textAlign="center" fontSize={{ xs: 16, sm: 18, md: 24 }} fontWeight={600} gutterBottom>
-                Tarefas Cadastradas
+                Tarefas Cadastradas {totalCount}
             </Typography>
             <SearchBar
-                onSearch={(value) => setQuery(value)}
+                onSearch={(value) => searchQueryVar.set(value)}
             />
-            <Stack direction="row" mb={1} justifyContent="flex-end" spacing={2}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={showCompleted}
+                            onChange={(e) => showCompletedVar.set(e.target.checked)}
+                        />
+                    }
+                    label="Mostrar concluídas"
+                />
                 <Pagination count={Math.ceil(totalCount / 4)} page={page + 1} onChange={(_, value) => setPage(value - 1)} />
             </Stack>
             {tasks.length === 0 && !loading ? (

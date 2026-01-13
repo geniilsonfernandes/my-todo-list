@@ -31,7 +31,7 @@ export const NewPage = () => {
     const onSubmit = (data) => {
         // createTask(todo, description, status, date)
         createTask(data.todo, data.description, data.status, new Date(data.date)).then(() => {
-       
+            navigate(-1);
         }).catch((error) => {
             console.log(error);
         });
