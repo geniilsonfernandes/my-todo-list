@@ -80,7 +80,7 @@ export const ListTasks = () => {
             ) : tasks.length === 0 ? (
                 <EmptyState
                     message="Nenhuma tarefa encontrada"
-                    onAction={() => navigate('/new')}
+                        onAction={() => navigate('/tasks/new')}
                     actionText="Adicionar Tarefa"
                 />
             ) : (

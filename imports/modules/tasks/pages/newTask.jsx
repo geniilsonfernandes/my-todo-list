@@ -55,6 +55,8 @@ export const NewTask = () => {
 
     const variant = isEditing ? 'outlined' : 'filled';
 
+    const isOwnerTask = data?.owner === user?._id;
+
     const defaultValues = React.useMemo(() => ({
         todo: data?.todo || '',
         description: data?.description || '',
@@ -129,14 +131,13 @@ export const NewTask = () => {
                         {data ? `${isEditing ? 'Editar' : 'Visualizar'} Tarefa` : 'Nova Tarefa'}
                     </Typography>
                 </Stack>
-                {data && (
+                {data && isOwnerTask && (
                     <Button endIcon={isEditing ? <ArrowBackIcon /> : <EditIcon />} variant={isEditing ? 'outlined' : 'contained'} onClick={toggleEdit}>
                         {isEditing ? 'Visualizar' : 'Editar'}
                     </Button>
                 )}
             </Box>
-            {data
-                &&
+            {data && isOwnerTask &&
                 <StatusButtons handleStatusChange={handleStatusChange} status={status} updateTaskStatusLoading={updateTaskStatusLoading} />
             }
 
@@ -209,7 +210,7 @@ export const NewTask = () => {
                     fullWidth
                     disabled
                     variant={variant}
-                    {...register('createdBy')}
+                    defaultValue={user?.emails[0].address}
                     error={!!errors.createdBy}
                     helperText={errors.createdBy?.message}
                 />
