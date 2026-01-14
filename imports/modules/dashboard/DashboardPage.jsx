@@ -1,22 +1,24 @@
 import React from 'react';
-import { Box, CardContent, Typography, Grid, Button, Container, useTheme, CircularProgress } from '@mui/material';
+import { Box, CardContent, Typography, Grid, Button, Container, useTheme, CircularProgress, Skeleton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { grey } from '@mui/material/colors';
-import { useAuthContext } from '../../ui/context/AuthContext';
+import { useAuth } from '../../ui/context/AuthContext';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 
 export const DashboardPage = () => {
-    const { user, logout } = useAuthContext();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [analytics, setAnalytics] = React.useState(null);
+    const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
         Meteor.call('tasks.analytics', (err, result) => {
+            setLoading(false);
             if (err) {
                 console.error(err);
             } else {
@@ -25,7 +27,6 @@ export const DashboardPage = () => {
         });
     }, []);
 
-    // Memoiza os cards para não recriar em toda render
     const cards = React.useMemo(() => {
         if (!analytics) return [];
         const { totalTasks, completedTasks, inProgressTasks } = analytics;
@@ -70,27 +71,34 @@ export const DashboardPage = () => {
             </Box>
 
             <Grid container spacing={2}>
-                {cards.map((card, index) => (
+                {(loading ? Array.from(new Array(3)) : cards).map((card, index) => (
                     <Grid item size={{
                         xs: 12,
                         sm: 6,
                         md: 6,
                     }} key={index}>
-
                         <Box
-
                             height={{
                                 xs: 100,
                                 sm: 200,
                                 md: 200,
                             }}
-                            sx={{ bgcolor: card.color, borderRadius: 2 }}>
-                            <CardContent sx={{ display: 'flex', height: '100%', flexDirection: 'column', alignItems: 'start', justifyContent: 'space-between' }}>
-                                <Typography variant="subtitle1" fontSize={{ xs: 16, sm: 20, }} fontWeight={500}>
-                                    {card.title}
+                            sx={{ bgcolor: card?.color || "grey.100", borderRadius: 2 }}
+                        >
+                            <CardContent
+                                sx={{
+                                    display: "flex",
+                                    height: "100%",
+                                    flexDirection: "column",
+                                    alignItems: "start",
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <Typography variant="subtitle1" fontSize={{ xs: 16, sm: 20 }} fontWeight={500}>
+                                    {loading ? <Skeleton width="60%" /> : card.title}
                                 </Typography>
                                 <Typography variant="h3" fontSize={{ xs: 24, sm: 32, md: 48 }} fontWeight={700}>
-                                    {card.count}
+                                    {loading ? <Skeleton width="40%" /> : card.count}
                                 </Typography>
                             </CardContent>
                         </Box>
@@ -104,6 +112,7 @@ export const DashboardPage = () => {
                     <ActionCard onClick={() => navigate('/tasks')} />
                 </Grid>
             </Grid>
+
 
         </Container >
     );

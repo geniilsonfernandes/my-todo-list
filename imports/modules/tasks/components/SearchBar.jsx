@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, InputAdornment, FilledInput, OutlinedInput } from '@mui/material';
+import { Box, TextField, InputAdornment, FilledInput, OutlinedInput, CircularProgress } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-export const SearchBar = ({ onSearch, delay = 500 }) => {
+export const SearchBar = ({ onSearch, delay = 500, loading }) => {
     const [value, setValue] = useState('');
 
     React.useEffect(() => {
@@ -26,6 +26,11 @@ export const SearchBar = ({ onSearch, delay = 500 }) => {
                         <SearchIcon />
                     </InputAdornment>
                 }
+                endAdornment={loading ? (
+                    <InputAdornment position="end">
+                        <CircularProgress size={16} color="primary" />
+                    </InputAdornment>
+                ) : null}
             />
         </Box>
     );

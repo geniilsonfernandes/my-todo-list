@@ -22,6 +22,46 @@ export const useCreateTask = () => {
   return { createTask, loading };
 };
 
+
+export const useUpdateTaskStatus = () => {
+  const [loading, setLoading] = useState(false);
+
+  const updateTaskStatus = async (taskId, status) => {
+    if (!TaskStatus.includes(status)) return toast.error('Status inválido');
+    setLoading(true);
+    try {
+      await Meteor.callAsync('tasks.updateStatus', taskId, status);
+      toast.success('Status atualizado!');
+    } catch (err) {
+      toast.error(err.reason);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateTaskStatus, loading };
+};
+
+
+export const useEditTask = () => {
+  const [loading, setLoading] = useState(false);
+
+  const editTask = async (taskId, todo, description, status = 'pending', date = new Date()) => {
+    if (!TaskStatus.includes(status)) return toast.error('Status inválido');
+    setLoading(true);
+    try {
+      await Meteor.callAsync('tasks.update', taskId, todo, description, status, date);
+      toast.success('Tarefa editada!');
+    } catch (err) {
+      toast.error(err.reason);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { editTask, loading };
+};
+
 // THIS IS FOR DELETE TASK
 export const useDeleteTask = () => {
   const [loading, setLoading] = useState(false);
@@ -43,7 +83,6 @@ export const useDeleteTask = () => {
 
 
 
-// THIS IS FOR COUNT TOTAL TASKS
 
 export const useTasksCount = (filters = {}, deps = []) => {
   const [totalCount, setTotalCount] = useState(0);

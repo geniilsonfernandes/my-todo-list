@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Stack, Typography, Button, Container, Pagination, Skeleton, FormControlLabel, Checkbox } from '@mui/material';
-import { TodoItem } from './components/TodoItem';
+import { TaskItem } from './components/TaskItem';
 import { SearchBar } from './components/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import { useTasksCount } from './hooks/useTasks';
@@ -13,7 +13,7 @@ import { showCompletedVar, searchQueryVar, currentPageVar } from './reactiveVars
 
 
 
-export const TodoListPage = () => {
+export const ListTasks = () => {
     const navigate = useNavigate();
     const showCompleted = useTracker(() => showCompletedVar.get());
     const query = useTracker(() => searchQueryVar.get());
@@ -35,6 +35,16 @@ export const TodoListPage = () => {
 
     const { totalCount } = useTasksCount({ showCompleted }, [tasks]);
 
+
+    React.useEffect(() => {
+        
+        return () => {
+            currentPageVar.set(0);
+            searchQueryVar.set('');
+            showCompletedVar.set(false);
+        };
+    }, []);
+
     return (
         <Container maxWidth="md"   >
             <Typography variant="h4" my={4} textAlign="center" fontSize={{ xs: 16, sm: 18, md: 24 }} fontWeight={600} gutterBottom>
@@ -42,6 +52,7 @@ export const TodoListPage = () => {
             </Typography>
             <SearchBar
                 onSearch={(value) => searchQueryVar.set(value)}
+                loading={loading}
             />
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
                 <FormControlLabel
@@ -75,7 +86,7 @@ export const TodoListPage = () => {
             ) : (
                 <List sx={{ width: '100%' }}>
                             {tasks.slice(0, 4).map((item) => (
-                                <TodoItem item={item} key={item._id} />
+                                <TaskItem item={item} key={item._id} />
                             ))}
                 </List>
             )}
@@ -87,7 +98,7 @@ export const TodoListPage = () => {
                     bottom: { xs: 16, sm: 32 },
                     right: { xs: 16, sm: 32 }
                 }}
-                onClick={() => navigate('/new')}
+                onClick={() => navigate('/tasks/new')}
             >
                 <AddIcon />
             </Fab>

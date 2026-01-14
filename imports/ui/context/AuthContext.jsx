@@ -1,45 +1,61 @@
-import React, { createContext, useContext } from 'react';
-import { useTracker } from 'meteor/react-meteor-data';
-import { Meteor } from 'meteor/meteor';
-import { toast } from 'sonner'
+import React from "react";
+import { Meteor } from "meteor/meteor";
+import { toast } from "sonner";
 
-const AuthContext = createContext(null);
+const AuthContext = React.createContext();
+
+const KEY = "user";
 
 export const AuthProvider = ({ children }) => {
-    const { user, isLoading } = useTracker(() => ({
-        user: Meteor.user(),
-        isLoading: Meteor.loggingIn(),
-    }));
+    const [user, setUser] = React.useState(() => {
+        const savedUser = localStorage.getItem(KEY);
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
 
-    const login = (email, password) => {
+    const logout = () => {
+        Meteor.logout();
+        setUser(null);
+        localStorage.removeItem(KEY);
+    };
+
+    const setUserDataInLocalStorage = (userData) => {
+        setUser(userData);
+        localStorage.setItem(KEY, JSON.stringify(userData));
+    };
+
+
+
+    const login = async (email, password) => {
         Meteor.loginWithPassword(email, password, (err) => {
             if (err) {
-                console.log(err);
-
-                toast.error('Erro login:', {
-                    description: err.reason,
-                });
+                toast.error('Erro login', { description: err.reason });
             } else {
-                toast.success('Logado!');
+                toast.success('Logado com sucesso!');
+                setUserDataInLocalStorage(Meteor.user());
+            }
+
+        });
+    };
+
+    const register = async (email, password) => {
+        Meteor.call('users.create', email, password, (err, result) => {
+            if (err) {
+                toast.error('Erro ao criar usuário', { description: err.reason });
+            } else {
+                toast.success('Usuário criado com sucesso!');
+                setUserDataInLocalStorage(Meteor.user());
             }
         });
     };
 
-    const logout = () => {
-        Meteor.logout();
-    };
+
+
 
     return (
-        <AuthContext.Provider value={{
-            user, isLoading, logout, login,
-            userEmail: user?.emails[0].address,
-
-        }}>
+        <AuthContext.Provider value={{ user, logout, login, register }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
-export const useAuthContext = () => {
-    return useContext(AuthContext);
-};
+export const useAuth = () => React.useContext(AuthContext);

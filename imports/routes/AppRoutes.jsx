@@ -1,57 +1,76 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet, useNavigate, useRouteError } from 'react-router-dom';
 
-import { TodoListPage } from '../modules/todoList/TodoListPage';
+import { ListTasks } from '../modules/tasks/ListTasks';
 import { AuthPage } from '../modules/auth/AuthPage';
 import { DashboardPage } from '../modules/dashboard/DashboardPage';
-import { EditPage } from '../modules/todoList/EditPage';
-import { NewPage } from '../modules/todoList/NewPage';
-import { RouteWrapper } from './RouteWrapper';
+import { NewTask } from '../modules/tasks/pages/newTask';
+import { useAuth } from '../ui/context/AuthContext';
+import { TasksCollection } from '../api/tasks/tasksCollection';
+import { ErrorPage } from '../ui/ErrorPage';
+import { NotFoundPage } from '../ui/NotFoundPage';
 
-export const AppRoutes = () => (
-    <Router>
-        <Routes>
-            <Route
-                path="/"
-                element={
-                    <RouteWrapper type="public">
-                        <AuthPage />
-                    </RouteWrapper>
-                }
-            />
-            <Route
-                path="/dashboard"
-                element={
-                    <RouteWrapper type="private">
-                        <DashboardPage />
-                    </RouteWrapper>
-                }
-            />
-            <Route
-                path="/tasks"
-                element={
-                    <RouteWrapper type="private">
-                        <TodoListPage />
-                    </RouteWrapper>
-                }
-            />
-            <Route
-                path="/edit/:id"
-                element={
-                    <RouteWrapper type="private">
-                        <EditPage />
-                    </RouteWrapper>
-                }
 
-            />
-            <Route
-                path="/new"
-                element={
-                    <RouteWrapper type="private">
-                        <NewPage />
-                    </RouteWrapper>
-                }
-            />
-        </Routes>
-    </Router>
-);
+export const PrivateRoute = ({ redirectTo = "/" }) => {
+    const { user, isLoading } = useAuth();
+
+
+
+    if (isLoading) return <p>Loading...</p>; // ou Skeleton
+
+    if (!user) return <Navigate to={redirectTo} replace />;
+
+    return <Outlet />;
+};
+
+export const PublicRoute = ({ redirectTo = "/dashboard" }) => {
+    const { user, isLoading } = useAuth();
+
+    if (isLoading) return <p>Loading...</p>;
+
+    if (user) return <Navigate to={redirectTo} replace />;
+
+    return <Outlet />;
+};
+
+export const router = createBrowserRouter([
+    {
+        element: <PublicRoute />,
+        children: [
+            { path: "/", element: <AuthPage />, errorElement: <ErrorPage /> },
+        ],
+        errorElement: <NotFoundPage />,
+    },
+    {
+        element: <PrivateRoute />,
+        children: [
+            { path: "/dashboard", element: <DashboardPage />, errorElement: <ErrorPage /> },
+            { path: "/tasks", element: <ListTasks />, errorElement: <ErrorPage /> },
+            { path: "/tasks/new", element: <NewTask />, errorElement: <ErrorPage /> },
+            {
+                path: "/tasks/edit/:id",
+                element: <NewTask />,
+                loader: async ({ params }) => {
+                    const task = TasksCollection.findOne({ _id: params.id });
+                    if (!task) throw new Response("Task not found", { status: 404 });
+                    return task;
+                },
+                errorElement: <ErrorPage />,
+            },
+        ],
+        errorElement: <NotFoundPage />,
+    },
+]);
+
+
+
+export const AppRoutes = () => {
+    return <RouterProvider router={router} />;
+};
+
+
+
+/// move on loaders to outher file
+
+
+

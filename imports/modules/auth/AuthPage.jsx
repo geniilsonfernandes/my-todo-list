@@ -7,9 +7,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { authSchema } from './validation/authValidation';
-import { useAuth } from './hooks/useAuth';
+
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../ui/context/AuthContext';
 
 export const AuthPage = () => {
+  const navigate = useNavigate();
   const { login, register, loading } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -22,8 +25,8 @@ export const AuthPage = () => {
     },
   });
 
-  const handleLogin = (data) => login(data.email, data.password);
-  const handleRegister = (data) => register(data.email, data.password);
+  const handleLogin = (data) => login(data.email, data.password).then(() => navigate('/dashboard'));
+  const handleRegister = (data) => register(data.email, data.password).then(() => navigate('/dashboard'));
 
   return (
     <Box

@@ -11,19 +11,17 @@ export const TaskStatusEnum = {
   COMPLETED: 'completed',
 };
 
+
 Meteor.methods({
-  'tasks.create'(todo, description, status = 'pending', date) {
+  async 'tasks.create'(todo, description, status = 'pending', date) {
     check(todo, String);
     check(description, String);
     check(status, Match.Where(s => TaskStatus.includes(s)));
     check(date, Date);
 
-
     if (!this.userId) throw new Meteor.Error('not-authorized', 'Você precisa estar logado');
 
-    const user = Meteor.user();
-    console.log(user);
-
+    const user = await Meteor.users.findOneAsync(this.userId);
 
     return TasksCollection.insertAsync({
       todo,
@@ -31,36 +29,39 @@ Meteor.methods({
       status,
       date,
       owner: this.userId,
+      user,
       createdAt: new Date(),
     })
   },
 
 
 
-  'tasks.update'(taskId, todo, description, date) {
+  async 'tasks.update'(taskId, todo, description, status = 'pending', date) {
     check(taskId, String);
     check(todo, String);
     check(description, String);
+    check(status, Match.Where(s => TaskStatus.includes(s)));
     check(date, Date);
 
-    const task = TasksCollection.findOne(taskId);
+    const task = await TasksCollection.findOneAsync(taskId);
+
     if (!task || task.owner !== this.userId)
       throw new Meteor.Error('not-authorized', 'Você não pode editar esta tarefa');
 
-    return TasksCollection.update(taskId, {
-      $set: { todo, description, date },
+    return TasksCollection.updateAsync(taskId, {
+      $set: { todo, description, status, date },
     });
   },
 
-  'tasks.updateStatus'(taskId, status) {
+  async 'tasks.updateStatus'(taskId, status) {
     check(taskId, String);
     check(status, Match.Where(s => TaskStatus.includes(s)));
 
-    const task = TasksCollection.findOne(taskId);
+    const task = await TasksCollection.findOneAsync(taskId);
     if (!task || task.owner !== this.userId)
       throw new Meteor.Error('not-authorized', 'Você não pode alterar esta tarefa');
 
-    return TasksCollection.update(taskId, {
+    return TasksCollection.updateAsync(taskId, {
       $set: { status },
     });
   },
