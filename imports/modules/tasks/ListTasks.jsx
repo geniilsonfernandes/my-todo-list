@@ -23,7 +23,7 @@ export const ListTasks = () => {
     const skip = page * limit;
 
     const { tasks, loading } = useTracker(() => {
-        const handler = Meteor.subscribe('tasks', { limit, skip, query, showCompleted });
+        const handler = Meteor.subscribe('tasks.all', { limit, skip, query, showCompleted });
         const isLoading = !handler.ready();
 
         const data = isLoading

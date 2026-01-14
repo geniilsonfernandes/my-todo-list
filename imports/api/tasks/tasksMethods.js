@@ -76,9 +76,8 @@ Meteor.methods({
     return TasksCollection.removeAsync(taskId);
   },
   async 'tasks.count'({ showCompleted = false } = {}) {
-    if (!this.userId) return 0;
 
-    const selector = { owner: this.userId };
+    const selector = {};
     if (!showCompleted) {
       selector.status = { $ne: 'completed' };
     }

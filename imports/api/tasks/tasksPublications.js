@@ -30,3 +30,28 @@ Meteor.publish('tasks', function tasksPublication({ limit = 4, skip = 0, query =
 
   return result
 });
+
+
+Meteor.publish('tasks.all', function tasksAllPublication({ limit = 4, skip = 0, query = "", showCompleted = false }) {
+
+
+  const selector = {};
+
+  if (!showCompleted) {
+    selector.status = { $ne: 'completed' };
+  }
+
+
+  if (query && query.trim() !== '') {
+    selector.todo = { $regex: query.trim(), $options: 'i' };
+  }
+  const result = TasksCollection.find(
+    selector,
+    {
+      sort: { createdAt: -1 },
+      skip,
+      limit,
+    }
+  );
+  return result
+});
