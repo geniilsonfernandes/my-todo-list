@@ -113,7 +113,7 @@ export const NewTask = () => {
     const status = watch('status');
 
     return (
-        <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Container maxWidth="md" sx={{ mt: 8 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                 <Stack direction="row" spacing={2} alignItems="center">
                     <IconButton onClick={handleCancel}>
@@ -135,7 +135,10 @@ export const NewTask = () => {
                     </Button>
                 )}
             </Box>
-            <StatusButtons handleStatusChange={handleStatusChange} status={status} updateTaskStatusLoading={updateTaskStatusLoading} />
+            {data
+                &&
+                <StatusButtons handleStatusChange={handleStatusChange} status={status} updateTaskStatusLoading={updateTaskStatusLoading} />
+            }
 
             <Stack
                 component="form"
@@ -264,7 +267,7 @@ export const StatusButtons = ({ status, handleStatusChange, updateTaskStatusLoad
                     fullWidth
                     startIcon={<PlayArrowIcon />}
                     onClick={() => handleStatusChange(TaskStatusEnum.IN_PROGRESS)}
-                    disabled={status !==  TaskStatusEnum.PENDING}
+                    disabled={status !== TaskStatusEnum.PENDING}
                     loading={updateTaskStatusLoading}
                 >
                     Iniciar (Em Andamento)

@@ -46,9 +46,9 @@ export const ListTasks = () => {
     }, []);
 
     return (
-        <Container maxWidth="md"   >
+        <Container maxWidth="md" sx={{ mt: 8 }} >
             <Typography variant="h4" my={4} textAlign="center" fontSize={{ xs: 16, sm: 18, md: 24 }} fontWeight={600} gutterBottom>
-                Tarefas Cadastradas {totalCount}
+                Tarefas Cadastradas
             </Typography>
             <SearchBar
                 onSearch={(value) => searchQueryVar.set(value)}

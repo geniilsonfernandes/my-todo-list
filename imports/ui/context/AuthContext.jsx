@@ -5,8 +5,14 @@ import { toast } from "sonner";
 const AuthContext = React.createContext();
 
 const KEY = "user";
+const PROFILE_KEY = "profile";
 
 export const AuthProvider = ({ children }) => {
+    const [profile, setProfile] = React.useState(() => {
+        const savedProfile = localStorage.getItem(PROFILE_KEY);
+        return savedProfile ? JSON.parse(savedProfile) : null;
+    });
+
     const [user, setUser] = React.useState(() => {
         const savedUser = localStorage.getItem(KEY);
         return savedUser ? JSON.parse(savedUser) : null;
@@ -16,35 +22,58 @@ export const AuthProvider = ({ children }) => {
         Meteor.logout();
         setUser(null);
         localStorage.removeItem(KEY);
-    };
-
-    const setUserDataInLocalStorage = (userData) => {
-        setUser(userData);
-        localStorage.setItem(KEY, JSON.stringify(userData));
+        setProfile(null);
+        localStorage.removeItem(PROFILE_KEY);
     };
 
 
+    const saveProfileLocal = (profileData) => {
+        setProfile(profileData);
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
+    };
 
-    const login = async (email, password) => {
-        Meteor.loginWithPassword(email, password, (err) => {
-            if (err) {
-                toast.error('Erro login', { description: err.reason });
-            } else {
-                toast.success('Logado com sucesso!');
-                setUserDataInLocalStorage(Meteor.user());
-            }
 
+    const fetchProfile = async () => {
+        Meteor.callAsync('profiles.get').then((profile) => {
+            saveProfileLocal(profile);
         });
     };
 
+    const login = async (email, password) => {
+        try {
+            const result = await new Promise((resolve, reject) => {
+                Meteor.loginWithPassword(email, password, (err) => {
+                    if (err) reject(err);
+                    else resolve(Meteor.user());
+                });
+            });
+
+            setUser(result);
+            localStorage.setItem(KEY, JSON.stringify(result));
+            fetchProfile();
+
+            toast.success('Logado com sucesso!');
+        } catch (err) {
+            toast.error('Erro ao logar', { description: "Por favor, verifique suas credenciais" });
+        }
+    };
+
     const register = async (email, password) => {
-        Meteor.call('users.create', email, password, (err, result) => {
-            if (err) {
-                toast.error('Erro ao criar usuário', { description: err.reason });
-            } else {
-                toast.success('Usuário criado com sucesso!');
-                setUserDataInLocalStorage(Meteor.user());
-            }
+        Meteor.callAsync('users.create', email, password).then(() => {
+            toast.success('Usuário criado com sucesso!');
+
+        }).catch((err) => {
+            toast.error('Erro ao criar usuário', { description: err.reason });
+        });
+    };
+
+
+    const saveProfile = async (profileData) => {
+        await Meteor.callAsync('profiles.save', profileData).then(() => {
+            toast.success('Perfil salvo com sucesso!');
+            fetchProfile();
+        }).catch((err) => {
+            toast.error('Erro ao salvar perfil', { description: err.reason });
         });
     };
 
@@ -52,7 +81,7 @@ export const AuthProvider = ({ children }) => {
 
 
     return (
-        <AuthContext.Provider value={{ user, logout, login, register }}>
+        <AuthContext.Provider value={{ user, logout, login, register, profile, saveProfile }}>
             {children}
         </AuthContext.Provider>
     );

@@ -11,7 +11,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { IconButton, Stack, Tooltip } from '@mui/material';
 
 export const DashboardPage = () => {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [analytics, setAnalytics] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
@@ -54,7 +54,7 @@ export const DashboardPage = () => {
 
     return (
         <Container maxWidth="md" sx={{ mt: 4 }}>
-            <Box mb={4} display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box my={8} display="flex" justifyContent="space-between" alignItems="flex-start">
                 <Box>
                     <Typography variant="h4" fontSize={{ xs: 24, sm: 28, md: 32 }} fontWeight={600} gutterBottom>
                         Olá, {user?.emails?.[0]?.address || 'Usuário'}, seja bem-vindo!
@@ -63,11 +63,6 @@ export const DashboardPage = () => {
                         Aqui está sua lista de tarefas, adicione uma nova tarefa para começar!
                     </Typography>
                 </Box>
-                <Tooltip title="Sair">
-                    <IconButton onClick={logout} color="primary">
-                        <LogoutIcon />
-                    </IconButton>
-                </Tooltip>
             </Box>
 
             <Grid container spacing={2}>

@@ -9,19 +9,11 @@ import { useAuth } from '../ui/context/AuthContext';
 import { TasksCollection } from '../api/tasks/tasksCollection';
 import { ErrorPage } from '../ui/ErrorPage';
 import { NotFoundPage } from '../ui/NotFoundPage';
-
-
-export const PrivateRoute = ({ redirectTo = "/" }) => {
-    const { user, isLoading } = useAuth();
+import { PrivateRoute } from './PrivateRoute';
+import { ProfilePage } from '../modules/profile/ProfilePage';
 
 
 
-    if (isLoading) return <p>Loading...</p>; // ou Skeleton
-
-    if (!user) return <Navigate to={redirectTo} replace />;
-
-    return <Outlet />;
-};
 
 export const PublicRoute = ({ redirectTo = "/dashboard" }) => {
     const { user, isLoading } = useAuth();
@@ -42,11 +34,18 @@ export const router = createBrowserRouter([
         errorElement: <NotFoundPage />,
     },
     {
-        element: <PrivateRoute />,
+        element: <PrivateRoute redirectTo="/dashboard" />,
         children: [
             { path: "/dashboard", element: <DashboardPage />, errorElement: <ErrorPage /> },
             { path: "/tasks", element: <ListTasks />, errorElement: <ErrorPage /> },
             { path: "/tasks/new", element: <NewTask />, errorElement: <ErrorPage /> },
+            {
+                path: "/profile", loader: async () => {
+                    const profile = await Meteor.callAsync('profiles.get');
+                    if (!profile) return {}
+                    return profile;
+                }, element: <ProfilePage />, errorElement: <ErrorPage />
+            },
             {
                 path: "/tasks/edit/:id",
                 element: <NewTask />,

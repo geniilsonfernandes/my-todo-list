@@ -25,8 +25,8 @@ export const AuthPage = () => {
     },
   });
 
-  const handleLogin = (data) => login(data.email, data.password).then(() => navigate('/dashboard'));
-  const handleRegister = (data) => register(data.email, data.password).then(() => navigate('/dashboard'));
+  const handleLogin = (data) => login(data.email, data.password)
+  const handleRegister = (data) => register(data.email, data.password)
 
   return (
     <Box
