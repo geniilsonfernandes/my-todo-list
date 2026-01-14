@@ -10,16 +10,21 @@ import {
     Toolbar,
     AppBar,
     Typography,
-    IconButton
+    IconButton,
 } from "@mui/material";
-
 import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useState } from "react";
 import { useAuth } from "../ui/context/AuthContext";
 import { LogoutButton } from "../ui/components/LogoutButton";
+import { UserProfileHeader } from "../ui/components/UserProfileHeader";
+
+
+
 const drawerWidth = 220;
+
+
 
 export const PrivateRoute = ({ redirectTo = "/" }) => {
     const { user, isLoading } = useAuth();
@@ -43,6 +48,7 @@ export const PrivateRoute = ({ redirectTo = "/" }) => {
                     TaskApp
                 </Typography>
             </Toolbar>
+            <UserProfileHeader />
             <List>
                 {menuItems.map((item) => (
                     <ListItemButton
