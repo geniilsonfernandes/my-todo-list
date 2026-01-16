@@ -1,24 +1,24 @@
-import React from "react";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+
+import HomeIcon from '@mui/icons-material/Home';
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
 import {
+    AppBar,
     Box,
     Drawer,
+    IconButton,
     List,
     ListItemButton,
     ListItemIcon,
     ListItemText,
     Toolbar,
-    AppBar,
     Typography,
-    IconButton,
 } from "@mui/material";
-import HomeIcon from '@mui/icons-material/Home';
-import PersonIcon from '@mui/icons-material/Person';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useState } from "react";
-import { useAuth } from "../ui/context/AuthContext";
+import React from "react";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import { LogoutButton } from "../ui/components/LogoutButton";
 import { UserProfileHeader } from "../ui/components/UserProfileHeader";
+import { useAuth } from "../ui/context/AuthContext";
 
 
 
@@ -27,12 +27,12 @@ const drawerWidth = 220;
 
 
 export const PrivateRoute = ({ redirectTo = "/" }) => {
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, userId } = useAuth();
     const navigate = useNavigate();
-    const [mobileOpen, setMobileOpen] = useState(false);
+    const [mobileOpen, setMobileOpen] = React.useState(false);
 
     if (isLoading) return <p>Loading...</p>;
-    if (!user) return <Navigate to={redirectTo} replace />;
+    if (!userId) return <Navigate to={redirectTo} replace />;
 
     const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 

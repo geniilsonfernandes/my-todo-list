@@ -1,43 +1,28 @@
-import React from "react";
 import { Meteor } from "meteor/meteor";
+import { Tracker } from 'meteor/tracker';
+import React from "react";
 import { toast } from "sonner";
 
 const AuthContext = React.createContext();
 
-const KEY = "user";
-const PROFILE_KEY = "profile";
-
 export const AuthProvider = ({ children }) => {
-    const [profile, setProfile] = React.useState(() => {
-        const savedProfile = localStorage.getItem(PROFILE_KEY);
-        return savedProfile ? JSON.parse(savedProfile) : null;
-    });
+    const [userId, setUserId] = React.useState(Meteor.userId());
+    const [user, setUser] = React.useState(Meteor.user());
 
-    const [user, setUser] = React.useState(() => {
-        const savedUser = localStorage.getItem(KEY);
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
+    React.useEffect(() => {
+        const tracker = Tracker.autorun(() => {
+            setUserId(Meteor.userId());
+            setUser(Meteor.user());
+        });
+
+        return () => tracker.stop();
+    }, []);
 
     const logout = () => {
         Meteor.logout();
         setUser(null);
-        localStorage.removeItem(KEY);
-        setProfile(null);
-        localStorage.removeItem(PROFILE_KEY);
     };
 
-
-    const saveProfileLocal = (profileData) => {
-        setProfile(profileData);
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(profileData));
-    };
-
-
-    const fetchProfile = async () => {
-        Meteor.callAsync('profiles.get').then((profile) => {
-            saveProfileLocal(profile);
-        });
-    };
 
     const login = async (email, password) => {
         try {
@@ -49,8 +34,6 @@ export const AuthProvider = ({ children }) => {
             });
 
             setUser(result);
-            localStorage.setItem(KEY, JSON.stringify(result));
-            fetchProfile();
 
             toast.success('Logado com sucesso!');
         } catch (err) {
@@ -61,7 +44,6 @@ export const AuthProvider = ({ children }) => {
     const register = async (email, password) => {
         Meteor.callAsync('users.create', email, password).then(() => {
             toast.success('Usuário criado com sucesso!');
-
         }).catch((err) => {
             toast.error('Erro ao criar usuário', { description: err.reason });
         });
@@ -71,7 +53,6 @@ export const AuthProvider = ({ children }) => {
     const saveProfile = async (profileData) => {
         await Meteor.callAsync('profiles.save', profileData).then(() => {
             toast.success('Perfil salvo com sucesso!');
-            fetchProfile();
         }).catch((err) => {
             toast.error('Erro ao salvar perfil', { description: err.reason });
         });
@@ -79,9 +60,8 @@ export const AuthProvider = ({ children }) => {
 
 
 
-
     return (
-        <AuthContext.Provider value={{ user, logout, login, register, profile, saveProfile }}>
+        <AuthContext.Provider value={{ user, logout, login, register, saveProfile, userId }}>
             {children}
         </AuthContext.Provider>
     );
