@@ -25,8 +25,7 @@ Meteor.methods({
             return existing._id;
         }
 
-
-        const profile = await Profiles.findOneAsync({ userId: this.userId });
+        const profile = await Profiles.insertAsync(profileData);
 
         return profile;
     },
