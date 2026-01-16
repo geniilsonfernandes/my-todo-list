@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import {
-    Container,
-    Box,
-    TextField,
-    Button,
-    Typography,
-    MenuItem,
-    Avatar,
-    Paper,
-    Stack,
-    IconButton
-} from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
-import { useAuth } from '../../ui/context/AuthContext';
-import { toast } from 'sonner';
+import {
+    Avatar,
+    Box,
+    Button,
+    Container,
+    MenuItem,
+    Stack,
+    TextField,
+    Typography
+} from '@mui/material';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { useLoaderData } from 'react-router-dom';
+import { z } from 'zod';
+import { useAuth } from '../../ui/context/AuthContext';
 
 export const profileSchema = z.object({
     name: z.string().min(1, 'Nome é obrigatório'),

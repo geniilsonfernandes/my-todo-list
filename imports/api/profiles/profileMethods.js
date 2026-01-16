@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { Profiles } from './profileCollection';
 import { profileSchema } from '../../modules/profile/ProfilePage';
+import { Profiles } from './profileCollection';
 
 Meteor.methods({
     async 'profiles.save'(data) {
@@ -25,19 +25,11 @@ Meteor.methods({
             return existing._id;
         }
 
-        const profileId = await Profiles.insertAsync({
-            ...profileData,
-            createdAt: new Date(),
-        });
 
         const profile = await Profiles.findOneAsync({ userId: this.userId });
 
-        console.log(profile);
-
         return profile;
     },
-
-
 
     async 'profiles.get'() {
         if (!this.userId) {
