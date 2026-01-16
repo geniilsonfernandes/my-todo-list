@@ -1,14 +1,13 @@
-import React from 'react';
-import { Box, CardContent, Typography, Grid, Button, Container, useTheme, CircularProgress, Skeleton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingIcon from '@mui/icons-material/Pending';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Box, CardContent, Container, Grid, Skeleton, Typography, useTheme } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../ui/context/AuthContext';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { IconButton, Stack, Tooltip } from '@mui/material';
+
 
 export const DashboardPage = () => {
     const { user } = useAuth();
@@ -107,12 +106,9 @@ export const DashboardPage = () => {
                     <ActionCard onClick={() => navigate('/tasks')} />
                 </Grid>
             </Grid>
-
-
         </Container >
     );
 };
-
 
 
 const ActionCard = ({ onClick }) => {
